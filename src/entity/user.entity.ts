@@ -3,10 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   VersionColumn,
 } from 'typeorm';
+import { ProfileModel } from './profile.entity';
 
 export enum Role {
   USER,
@@ -37,6 +40,9 @@ export class UserModel {
   })
   title: string;
 
+  @Column()
+  email: string;
+
   // enum
   @Column({
     type: 'enum',
@@ -63,4 +69,8 @@ export class UserModel {
   @Generated('increment')
   // uuid도 가능
   additionalId: number;
+
+  @OneToOne(() => ProfileModel, (profile) => profile.user)
+  @JoinColumn()
+  profile: ProfileModel;
 }

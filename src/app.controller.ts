@@ -2,12 +2,15 @@ import { Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from './entity/user.entity';
 import { Repository } from 'typeorm';
+import { ProfileModel } from './entity/profile.entity';
 
 @Controller()
 export class AppController {
   constructor(
     @InjectRepository(UserModel)
     private readonly userRepository: Repository<UserModel>,
+    @InjectRepository(ProfileModel)
+    private readonly profileRepository: Repository<ProfileModel>,
   ) {}
 
   @Post('users')
@@ -19,7 +22,11 @@ export class AppController {
 
   @Get('users')
   getHello() {
-    return this.userRepository.find();
+    return this.userRepository.find({
+      relations: {
+        profile: true,
+      },
+    });
   }
 
   @Patch('users/:id')
@@ -29,6 +36,21 @@ export class AppController {
         id: parseInt(id),
       },
     });
+    return user;
+  }
+
+  @Post()
+  async createUserAndProfile() {
+    const user = await this.userRepository.save({
+      title: 'title',
+      email: 'email@email.com',
+    });
+
+    const profile = await this.profileRepository.save({
+      profileImg: 'adsdf.jpg',
+      user,
+    });
+
     return user;
   }
 }
