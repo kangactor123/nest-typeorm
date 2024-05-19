@@ -72,7 +72,19 @@ export class UserModel {
   // uuid도 가능
   additionalId: number;
 
-  @OneToOne(() => ProfileModel, (profile) => profile.user)
+  @OneToOne(() => ProfileModel, (profile) => profile.user, {
+    eager: true, // find() 를 실행할 때 마다 항상 함께 가져올 릴레이션
+    cascade: true, // 저장할 때 relation 을 한번에 저장 가능
+    nullable: true,
+
+    // 관계가 삭제 됐을 떄
+    // no action > 아무것도 안함
+    // cascade > 참조하는 row도 같이 삭제
+    // set null > 참조하는 row에서 참조 id를 null로 변경
+    // set default > 기본 셋팅으로 설정 (테이블의 기본 셋팅)
+    // restrict > 참조하고 있는 row가 있는 경우 참조 당하는 row 삭제 불가
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   profile: ProfileModel;
 

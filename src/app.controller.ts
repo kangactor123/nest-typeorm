@@ -22,10 +22,34 @@ export class AppController {
   @Get('users')
   getUsers() {
     return this.userRepository.find({
+      // 어떤 프로퍼티를 가져올 지 (기본은 *)
+      // select을 정의하면 정의된 프로퍼티들만 가져온다.
+      select: {
+        id: true,
+        profile: {
+          id: true,
+        },
+      },
+      // where 조건은 기본적으로 AND 조건으로 묶인다.
+      // where: [{ id: 3 }, {}], //[] 안에 조건을 여러개 넣어 OR 조건으로 가져올 수 있다.
+      where: {
+        profile: {
+          id: 4,
+        },
+      },
+      // relation
       relations: {
         profile: true,
-        posts: true,
       },
+
+      // asc, desc
+      order: {
+        id: 'ASC',
+      },
+      // 처음 몇 개를 제외할지
+      skip: 0,
+      // 몇 개를 가져올 지
+      take: 0, // 0 > 전부다 return
     });
   }
 
