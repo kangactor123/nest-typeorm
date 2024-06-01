@@ -1,7 +1,20 @@
 import { Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserModel } from './entity/user.entity';
-import { Repository } from 'typeorm';
+import {
+  Between,
+  Equal,
+  ILike,
+  In,
+  IsNull,
+  LessThan,
+  LessThanOrEqual,
+  Like,
+  MoreThan,
+  MoreThanOrEqual,
+  Not,
+  Repository,
+} from 'typeorm';
 import { ProfileModel } from './entity/profile.entity';
 import { PostModel } from './entity/post.entity';
 import { TagModel } from './entity/tag.entity';
@@ -24,40 +37,55 @@ export class AppController {
     return this.userRepository.find({
       // 어떤 프로퍼티를 가져올 지 (기본은 *)
       // select을 정의하면 정의된 프로퍼티들만 가져온다.
-      select: {
-        id: true,
-        profile: {
-          id: true,
-        },
-      },
+      // select: {
+      //   id: true,
+      //   profile: {
+      //     id: true,
+      //   },
+      // },
       // where 조건은 기본적으로 AND 조건으로 묶인다.
       // where: [{ id: 3 }, {}], //[] 안에 조건을 여러개 넣어 OR 조건으로 가져올 수 있다.
       where: {
-        profile: {
-          id: 4,
-        },
+        // 아닌경우
+        // id: Not(1),
+        // 적은 경우
+        // id: LessThan(30),
+        // id: LessThanOrEqual(30),
+        // id: MoreThan(30)
+        // id: MoreThanOrEqual(30)
+        // id: Equal(30)
+        // email: Like('%google%'),
+        // email: ILike('%')
+        // id: Between(10, 15),
+        // id: In([1, 3, 5]),
+        // id: IsNull(),
       },
-      // relation
-      relations: {
-        profile: true,
-      },
+      // // relation
+      // relations: {
+      //   profile: true,
+      // },
 
-      // asc, desc
-      order: {
-        id: 'ASC',
-      },
-      // 처음 몇 개를 제외할지
-      skip: 0,
-      // 몇 개를 가져올 지
-      take: 0, // 0 > 전부다 return
+      // // asc, desc
+      // order: {
+      //   id: 'ASC',
+      // },
+      // // 처음 몇 개를 제외할지
+      // skip: 0,
+      // // 몇 개를 가져올 지
+      // take: 0, // 0 > 전부다 return
     });
   }
 
   @Post('users')
-  postUser() {
-    return this.userRepository.save({
-      title: 'test title',
-    });
+  async postUser() {
+    for (let i = 0; i < 100; i++) {
+      await this.userRepository.save({
+        email: `user-${i}@google.com`,
+      });
+    }
+    // return this.userRepository.save({
+    //   title: 'test title',
+    // });
   }
 
   @Patch('users/:id')
