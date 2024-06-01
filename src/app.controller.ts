@@ -88,6 +88,72 @@ export class AppController {
     // });
   }
 
+  @Post('sample')
+  async sample() {
+    // create 메서드는 new User() 이랑 같다.
+    // 모델에 해당되는 객체 생성 - 저장은 안함
+    const url1 = this.userRepository.create({
+      email: 'test@codefactory',
+    });
+
+    await this.userRepository.save(url1);
+
+    // preload
+    // 입력된 값을 기반으로 데이터베이스에 있는 데이터를 불러오고
+    // 추가 입력된 값으로 데이터베이스에 가져온 값들을 대체함
+    // 저장하진 않음
+    const user3 = await this.userRepository.preload({
+      id: 101,
+      email: 'codefactory@codefacot.ai',
+    });
+
+    // 삭제하기
+    await this.userRepository.delete(101);
+
+    await this.userRepository.increment(
+      {
+        id: 1,
+      },
+      'count',
+      2,
+    );
+    await this.userRepository.decrement({ id: 1 }, 'count', 1);
+    const count = await this.userRepository.count({
+      where: {
+        email: ILike('%google'),
+      },
+    });
+
+    const sum = await this.userRepository.sum('count', {
+      email: ILike('%gopogle'),
+    });
+
+    const avg = await this.userRepository.average('count', {
+      id: LessThan(3),
+    });
+
+    const min = await this.userRepository.minimum('count', {
+      id: LessThan(4),
+    });
+
+    const max = await this.userRepository.maximum('count', {
+      id: LessThan($),
+    });
+
+    const users = await this.userRepository.find({});
+    const userOne = await this.userRepository.findOne({
+      where: {
+        id: 3,
+      },
+    });
+
+    const usersAndCount = await this.userRepository.findAndCount({
+      take: 3,
+    });
+
+    return url1;
+  }
+
   @Patch('users/:id')
   async pathUser(@Param('id') id: string) {
     const user = await this.userRepository.findOne({
